@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#161b14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Back Alley Bridge (v4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+/* Back Alley Bridge - field-manual theme
+   Palette is grounded in the game's barracks/back-alley origin: dark olive drab,
+   brass stencil accents, a worn card-paper face, and a vermilion warning color used
+   only for trump and for being set. Boldness is spent on the trump indicator and the
+   tally scoreboard; the table itself stays quiet. */
+
+:root {
+  --bg: #161b14;
+  --felt: #223426;
+  --felt-edge: #2c4231;
+  --panel: #1d241b;
+  --panel-2: #232c20;
+  --bone: #e7e1d2;
+  --bone-dim: #9aa089;
+  --brass: #c8a24a;
+  --brass-dim: #8a7437;
+  --vermilion: #d65a37;
+  --card: #ece4d2;
+  --card-red: #b23a2a;
+  --ink: #1a1813;
+  --win: #6f9a52;
+  --line: rgba(200, 162, 74, 0.22);
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --display: 'Oswald', 'Arial Narrow', system-ui, sans-serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #1f261c 0%, var(--bg) 60%);
+  color: var(--bone);
+  font-family: var(--body);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+}
+
+#app { max-width: 1040px; margin: 0 auto; padding: 18px 16px 64px; }
+
+h1, h2, h3, .display { font-family: var(--display); font-weight: 600; letter-spacing: 0.02em; }
+
+.eyebrow {
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  color: var(--brass);
+  font-weight: 500;
+}
+
+a { color: var(--brass); }
+
+/* ---------------------------------------------------------------- buttons */
+button { font-family: var(--display); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--panel-2);
+  color: var(--bone);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 11px 16px;
+  font-size: 15px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+}
+.btn:hover { background: #2b3527; border-color: var(--brass-dim); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+.btn-accent {
+  background: linear-gradient(180deg, #d4ab51, var(--brass));
+  color: #20180a; border-color: #e3c477; font-weight: 700;
+}
+.btn-accent:hover { background: linear-gradient(180deg, #e0b85e, #d0a94f); }
+
+.btn-danger { border-color: rgba(214, 90, 55, 0.5); color: #f0b8a6; }
+.btn-danger:hover { background: rgba(214, 90, 55, 0.14); }
+
+.btn-ghost { background: transparent; }
+
+.btn-sm { padding: 7px 11px; font-size: 13px; }
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.spread { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.muted { color: var(--bone-dim); }
+.mono-num { font-variant-numeric: tabular-nums; }
+
+input[type="text"] {
+  background: #11150f; color: var(--bone);
+  border: 1px solid var(--line); border-radius: 4px;
+  padding: 11px 12px; font-size: 16px; font-family: var(--body);
+  width: 100%;
+}
+input[type="text"]:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+
+.field { margin: 10px 0; }
+.field label { display: block; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px; color: var(--brass); margin-bottom: 6px; }
+
+.card-panel {
+  background: linear-gradient(180deg, var(--panel), #191f17);
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 18px; box-shadow: var(--shadow);
+}
+
+.divider { height: 1px; background: var(--line); border: 0; margin: 16px 0; }
+
+/* ---------------------------------------------------------------- home */
+.home-hero { text-align: center; padding: 26px 8px 10px; }
+.home-hero h1 { font-size: clamp(34px, 8vw, 62px); margin: 6px 0 2px; line-height: 0.95; }
+.home-hero .sub { color: var(--bone-dim); max-width: 520px; margin: 10px auto 0; }
+.stencil-rule { width: 120px; height: 3px; background: var(--brass); margin: 14px auto; opacity: 0.8; }
+.home-actions { display: grid; gap: 12px; max-width: 360px; margin: 22px auto 0; }
+.note { font-size: 13px; color: var(--bone-dim); margin-top: 8px; }
+.warn-note { color: var(--vermilion); }
+
+/* ---------------------------------------------------------------- lobby */
+.seat-list { display: grid; gap: 10px; margin: 14px 0; }
+.seat-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 12px 14px;
+}
+.seat-card .tag {
+  font-family: var(--display); text-transform: uppercase; letter-spacing: 0.12em;
+  font-size: 11px; color: var(--brass); border: 1px solid var(--brass-dim);
+  border-radius: 3px; padding: 2px 7px;
+}
+.seat-card.you { border-color: var(--brass); }
+.code-chip {
+  font-family: var(--display); font-size: 30px; letter-spacing: 0.32em;
+  color: var(--bone); background: #11150f; border: 1px dashed var(--brass-dim);
+  border-radius: 6px; padding: 8px 14px 8px 22px; display: inline-block;
+}
+
+/* ---------------------------------------------------------------- table header */
+.topbar { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; margin-bottom: 14px; }
+@media (max-width: 680px) { .topbar { grid-template-columns: 1fr; } }
+
+.tally {
+  background: #11150f; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+}
+.tally .t-line { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; }
+.tally .t-name { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.1em; font-size: 13px; }
+.tally .t-us .t-name { color: var(--brass); }
+.tally .t-score { font-family: var(--display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.tally .lead { color: var(--win); }
+
+.dealmeta { text-align: center; }
+.dealmeta .deal-num { font-family: var(--display); font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bone-dim); }
+
+/* trump indicator: the signature element */
+.trump-ind {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: #11150f; border: 1px solid var(--brass-dim); border-radius: 8px;
+  padding: 8px 12px; margin-top: 6px;
+}
+.trump-ind .lab { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.18em; font-size: 11px; color: var(--brass); }
+.trump-ind .val { font-family: var(--display); font-size: 20px; }
+.trump-ind.notrump { border-color: var(--bone-dim); }
+.trump-ind .val.red { color: var(--card-red); }
+.flip-card {
+  width: 38px; height: 52px; border-radius: 5px; background: var(--card); color: var(--ink);
+  display: flex; align-items: center; justify-content: center; font-family: var(--display);
+  font-size: 18px; box-shadow: var(--shadow); border: 1px solid #cdbf9a;
+  transform: rotate(-4deg);
+}
+.flip-card.red { color: var(--card-red); }
+
+.status-line { text-align: right; font-family: var(--display); letter-spacing: 0.06em; }
+@media (max-width: 680px) { .status-line { text-align: center; } }
+.status-line .turn { color: var(--brass); }
+.broken-flag { color: var(--vermilion); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+
+/* ---------------------------------------------------------------- felt + seats */
+.felt {
+  background:
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 8px),
+    radial-gradient(120% 120% at 50% 0%, var(--felt-edge), var(--felt));
+  border: 1px solid #36513c; border-radius: 14px; padding: 16px; box-shadow: var(--shadow) inset, var(--shadow);
+}
+.seat-row { display: flex; justify-content: center; }
+.mid { display: grid; grid-template-columns: minmax(74px, 1fr) auto minmax(74px, 1fr); align-items: center; gap: 10px; margin: 10px 0; }
+
+.seat {
+  background: rgba(17, 21, 15, 0.7); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 11px; min-width: 120px; max-width: 220px;
+}
+.seat.side { min-width: 0; }
+.seat.turn { border-color: var(--brass); box-shadow: 0 0 0 1px var(--brass), 0 0 16px rgba(200,162,74,0.18); }
+.seat .nm { font-family: var(--display); font-size: 15px; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
+.seat .chip { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid var(--brass-dim); color: var(--brass); border-radius: 3px; padding: 1px 5px; }
+.seat .chip.bot { color: var(--bone-dim); border-color: var(--line); }
+.seat .meta-line { display: flex; justify-content: space-between; gap: 10px; margin-top: 5px; font-size: 13px; color: var(--bone-dim); }
+.seat .bidv { color: var(--bone); }
+.seat .bidv.board { color: var(--brass); font-weight: 700; }
+.seat .bidv.boston { color: var(--vermilion); font-weight: 700; }
+.seat .trk { font-variant-numeric: tabular-nums; }
+
+/* center trick */
+.trick {
+  display: grid; grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 60px);
+  place-items: center; justify-content: center;
+}
+.trick .slot { display: flex; align-items: center; justify-content: center; }
+.t-top { grid-column: 2; grid-row: 1; }
+.t-left { grid-column: 1; grid-row: 2; }
+.t-mid { grid-column: 2; grid-row: 2; }
+.t-right { grid-column: 3; grid-row: 2; }
+.t-bottom { grid-column: 2; grid-row: 3; }
+.t-mid .lead-hint { font-family: var(--display); font-size: 11px; color: var(--bone-dim); text-transform: uppercase; letter-spacing: 0.1em; text-align: center; }
+
+/* ---------------------------------------------------------------- cards */
+.card-face {
+  width: 42px; height: 58px; border-radius: 5px; background: var(--card); color: var(--ink);
+  border: 1px solid #cdbf9a; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--display); line-height: 1; user-select: none;
+}
+.card-face .rk { font-size: 17px; }
+.card-face .st { font-size: 24px; }
+.card-face.red { color: var(--card-red); }
+.card-face.mini { width: 34px; height: 46px; }
+.card-face.mini .rk { font-size: 14px; }
+.card-face.mini .st { font-size: 18px; }
+
+.card-face.blooper { background: #20262d; color: var(--bone); border-color: var(--brass-dim); }
+.card-face.blooper .rk { font-size: 11px; letter-spacing: 0.06em; }
+.card-face.blooper .st { font-size: 16px; color: var(--brass); }
+.card-face.blooper.big { border-color: var(--vermilion); }
+.card-face.blooper.big .st { color: var(--vermilion); }
+
+/* your hand */
+.handbar { margin-top: 16px; }
+.hand { display: flex; flex-wrap: wrap; gap: 7px; }
+button.card-btn {
+  padding: 0; border: none; background: transparent; cursor: default;
+  border-radius: 6px;
+}
+button.card-btn .card-face { transition: transform 90ms ease, box-shadow 90ms ease; }
+button.card-btn.playable { cursor: pointer; }
+button.card-btn.playable .card-face { box-shadow: 0 0 0 1px var(--brass), var(--shadow); }
+button.card-btn.playable:hover .card-face { transform: translateY(-7px); }
+button.card-btn.playable:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+button.card-btn.dimmed .card-face { opacity: 0.42; }
+
+/* controls */
+.controls { margin-top: 14px; }
+.bid-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.bid-grid .btn { min-width: 46px; }
+.controls .prompt { font-family: var(--display); letter-spacing: 0.06em; margin-bottom: 8px; }
+.controls .prompt .accent { color: var(--brass); }
+
+/* log */
+.logbox { margin-top: 16px; background: #11150f; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.logbox .eyebrow { margin-bottom: 6px; }
+.log { list-style: none; margin: 0; padding: 0; max-height: 168px; overflow-y: auto; font-size: 13px; }
+.log li { padding: 2px 0; color: var(--bone-dim); border-bottom: 1px solid rgba(255,255,255,0.03); }
+.log li:last-child { color: var(--bone); }
+
+/* ---------------------------------------------------------------- overlay */
+.overlay {
+  position: fixed; inset: 0; background: rgba(8, 10, 7, 0.72);
+  display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 50;
+}
+.sheet {
+  width: 100%; max-width: 460px; background: linear-gradient(180deg, #242d20, #1a2017);
+  border: 1px solid var(--brass-dim); border-radius: 12px; padding: 22px; box-shadow: var(--shadow);
+}
+.sheet h2 { margin: 0 0 4px; font-size: 26px; }
+.result-row { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.result-row .who { font-family: var(--display); text-transform: uppercase; letter-spacing: 0.1em; }
+.result-row .who.us { color: var(--brass); }
+.result-row .delta { font-family: var(--display); font-size: 22px; font-variant-numeric: tabular-nums; }
+.delta.pos { color: var(--win); }
+.delta.neg { color: var(--vermilion); }
+.result-row .detail { display: block; font-family: var(--body); font-size: 12px; color: var(--bone-dim); text-transform: none; letter-spacing: 0; margin-top: 2px; }
+.sheet .totals { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--display); }
+.sheet .actions { margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end; }
+.sheet .waiting { color: var(--bone-dim); font-style: italic; }
+
+.gg-win { color: var(--win); }
+.gg-lose { color: var(--vermilion); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  button.card-btn.playable:hover .card-face { transform: none; }
+}
+
+/* ---------------------------------------------------------------- mobile + touch
+   Added for phone play: bigger tap targets, no accidental zoom, a table that fits
+   a narrow screen without horizontal scroll. */
+button, .card-btn { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.code-chip { user-select: all; }
+
+@media (max-width: 560px) {
+  #app { padding: 12px 10px 56px; }
+  .home-hero { padding: 16px 4px 6px; }
+  .felt { padding: 10px; border-radius: 12px; }
+  .mid { grid-template-columns: minmax(58px, 1fr) auto minmax(58px, 1fr); gap: 6px; margin: 8px 0; }
+  .seat { min-width: 92px; padding: 7px 9px; }
+  .seat.side { min-width: 0; }
+  .seat .nm { font-size: 14px; }
+  .trick { grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(3, 54px); }
+  .hand { gap: 6px; justify-content: center; }
+  .bid-grid .btn { min-width: 44px; padding: 10px 12px; }
+  .code-chip { font-size: 26px; letter-spacing: 0.26em; padding: 8px 10px 8px 18px; }
+  .tally .t-score { font-size: 22px; }
+  .sheet { padding: 18px; }
+  .sheet h2 { font-size: 22px; }
+}
+
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Firebase (compat) for realtime online play. Only used when a databaseURL is
+       set below. If these fail to load, local "vs bots" still works. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <!-- Your Firebase project settings. This is the only block you edit. -->
+  <script>
+/* ============================================================================
+   ONLINE SETUP (one time, ~5 minutes). Play vs bots needs none of this.
+
+   1. Go to https://console.firebase.google.com and create a project.
+   2. Build > Realtime Database > Create Database (any location, locked mode).
+   3. In the database Rules tab, paste this and Publish:
+        { "rules": { "rooms": { "$c": { ".read": "auth != null", ".write": "auth != null" } } } }
+   4. Build > Authentication > Get started > Sign-in method > enable Anonymous.
+      (This is what lets players in with NO account of their own.)
+   5. Project settings > Your apps > Web app (</>) > copy the config values
+      into the object below. databaseURL is the one that switches online on.
+      OR skip editing this file entirely: open the hosted page, tap Play
+      online, and paste the same config into the setup screen there.
+   6. Host this single file over HTTPS (your reverse proxy / Tailscale / any
+      static host) and share that link plus the four-letter room code.
+   ============================================================================ */
+window.FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",        // e.g. https://your-project-default-rtdb.firebaseio.com
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+  </script>
+
+  <!-- Rules engine (pure, tested). Sets window.BAB. -->
+  <script>
+/* Back Alley Bridge - rules engine (pure, no DOM)
+ *
+ * Ruleset implemented (confirmed by the user):
+ *  - 4 players, fixed partnerships. Team A = seats 0 & 2, Team B = seats 1 & 3.
+ *  - 54-card deck: standard 52 plus Big Joker and Little Joker (jokers).
+ *  - Deal sequence: 13 down to 1, then back up to 13 (25 deals).
+ *  - Trump set by the flipped top card after the deal. HOUSE RULE: a flipped Joker is
+ *    burned for the round and the next card is flipped instead; only if nothing but
+ *    jokers remain in the stack does the hand play no-trump.
+ *  - Trump rank, high to low: Big Joker, Little Joker, A K Q J 10 ... 2 of trump suit.
+ *    Jokers are always trump, even in a "no-trump" hand (they are the only trumps then).
+ *  - Cannot lead a trump until trump is broken, unless your side bid Board.
+ *  - Must follow the led suit if able. The app only ever offers legal cards, so reneging
+ *    cannot happen.
+ *  - HOUSE RULE: when the Big Joker is led, each player on the team opposing the
+ *    leader must play their highest trump if they hold one (jokers count as trump).
+ *  - Bidding: left of dealer first, dealer last. Pass, a number 0..handSize, Board, or
+ *    Boston (Boston only on hands of 6+ cards). A later bid need not beat an earlier one.
+ *    If all four pass, the next dealer redeals the same hand size.
+ *  - Scoring per hand:
+ *      Made numeric bid: 10 points per trick bid, plus 1 per overtrick.
+ *      A side at combined 0 (both passed) cannot be set; each trick it takes scores +1.
+ *      Set: lose 10 x (combined bid), no matter how many tricks were actually taken.
+ *      Board: take every trick. Value = 2 x (handSize x 10). Made = +, missed = -.
+ *      Double Board (BOTH sides bid Board): value = 3 x (handSize x 10) for each board side.
+ *        Whichever side sweeps wins it; the other loses it. If tricks split, both boards miss.
+ *      Boston: take the first 6 tricks. +100 if made, -100 if missed. Partner's bid is voided
+ *        for that side; the opposing side scores its bid normally over the whole hand.
+ *  - Jokers have no forced-trump-on-lead behavior. No rainbow bid. No screw-the-dealer.
+ *  - Game ends after all 25 deals. Higher total wins.
+ *
+ * NO-TRUMP + Joker edge case (rare: a Joker is flipped, only possible on hands where the
+ * Jokers were not dealt). Ruling used here, documented so you can change it: in a no-trump
+ * hand the two Jokers are the only trumps. They beat everything, big over little, and behave
+ * exactly like trumps for the "follow"/"broken"/win rules above.
+ */
+(function (root) {
+  'use strict';
+
+  // ---------------------------------------------------------------- constants
+  var SUITS = ['S', 'H', 'D', 'C'];
+  var SUIT_SYM = { S: '\u2660', H: '\u2665', D: '\u2666', C: '\u2663' };
+  var SUIT_NAME = { S: 'Spades', H: 'Hearts', D: 'Diamonds', C: 'Clubs' };
+  var RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+  var RANK_LABEL = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+  var BOT_NAMES = ['Taylor', 'Sadie', 'Denver', 'Julien'];
+
+  // 13..1 then 2..13  => 25 deals
+  var SEQ = (function () {
+    var s = [], n;
+    for (n = 13; n >= 1; n--) s.push(n);
+    for (n = 2; n <= 13; n++) s.push(n);
+    return s;
+  })();
+
+  function rankLabel(r) { return RANK_LABEL[r] || String(r); }
+
+  function makeDeck() {
+    var d = [], i, j;
+    for (i = 0; i < SUITS.length; i++) {
+      for (j = 0; j < RANKS.length; j++) {
+        d.push({ id: SUITS[i] + RANKS[j], suit: SUITS[i], rank: RANKS[j], joker: null });
+      }
+    }
+    d.push({ id: 'BB', suit: null, rank: 100, joker: 'big' });
+    d.push({ id: 'LB', suit: null, rank: 99, joker: 'little' });
+    return d;
+  }
+
+  function shuffle(a) {
+    var i, j, t;
+    for (i = a.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function clone(s) { return JSON.parse(JSON.stringify(s)); }
+  function team(seat) { return seat % 2; }       // 0 -> A, 1 -> B
+  function partner(seat) { return (seat + 2) % 4; }
+
+  // ---------------------------------------------------------------- card logic
+  function isTrump(card, trumpSuit) {
+    if (card.joker) return true;                 // Jokers are always trump
+    if (trumpSuit && card.suit === trumpSuit) return true;
+    return false;
+  }
+  function trumpStrength(card) {
+    if (card.joker === 'big') return 1000;
+    if (card.joker === 'little') return 999;
+    return card.rank;
+  }
+  function effSuit(card, trumpSuit) { return isTrump(card, trumpSuit) ? 'T' : card.suit; }
+
+  function cardLabel(card) {
+    if (card.joker === 'big') return 'Big Joker';
+    if (card.joker === 'little') return 'Little Joker';
+    return rankLabel(card.rank) + SUIT_SYM[card.suit];
+  }
+
+  function sortHand(hand, ts) {
+    return hand.slice().sort(function (a, b) {
+      var at = isTrump(a, ts), bt = isTrump(b, ts);
+      if (at !== bt) return at ? -1 : 1;
+      if (at && bt) return trumpStrength(b) - trumpStrength(a);
+      if (a.suit !== b.suit) return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+      return b.rank - a.rank;
+    });
+  }
+
+  function teamDeclaredBoard(state, t) {
+    if (!state.bids) return false;
+    var seats = [t, t + 2], i, b;
+    for (i = 0; i < seats.length; i++) {
+      b = state.bids[seats[i]];
+      if (b && b.type === 'board') return true;
+    }
+    return false;
+  }
+
+  // which cards may `seat` legally play right now
+  function legalPlays(state, seat) {
+    var hand = state.hands[seat] || [];
+    var trick = state.currentTrick || [];
+    var ts = state.trumpSuit;
+    if (trick.length === 0) {
+      var sideBoard = teamDeclaredBoard(state, team(seat));
+      var hasNonTrump = hand.some(function (c) { return !isTrump(c, ts); });
+      if (state.trumpBroken || sideBoard || !hasNonTrump) return hand.slice();
+      return hand.filter(function (c) { return !isTrump(c, ts); });
+    }
+    var ledEff = effSuit(trick[0].card, ts);
+    // House rule: when the Big Joker is led, each player on the team OPPOSING the
+    // leader must play their highest trump if they hold any (jokers count as trump,
+    // so the Little Joker is forced as the top trump when held).
+    if (trick[0].card.joker === 'big' && team(seat) !== team(trick[0].seat)) {
+      var trumps = hand.filter(function (c) { return isTrump(c, ts); });
+      if (trumps.length) {
+        trumps.sort(function (a, b) { return trumpStrength(b) - trumpStrength(a); });
+        return [trumps[0]];
+      }
+    }
+    var matching = hand.filter(function (c) { return effSuit(c, ts) === ledEff; });
+    return matching.length ? matching : hand.slice();
+  }
+
+  // index into trick[] of the winning play
+  function trickWinnerIndex(trick, ts) {
+    var anyTrump = trick.some(function (p) { return isTrump(p.card, ts); });
+    var ledSuit = trick[0].card.suit;
+    var bestIdx = -1, bestKey = -1, i, c, k;
+    for (i = 0; i < trick.length; i++) {
+      c = trick[i].card;
+      if (anyTrump) {
+        if (isTrump(c, ts)) { k = trumpStrength(c); if (k > bestKey) { bestKey = k; bestIdx = i; } }
+      } else {
+        if (c.suit === ledSuit) { k = c.rank; if (k > bestKey) { bestKey = k; bestIdx = i; } }
+      }
+    }
+    return bestIdx;
+  }
+
+  // ---------------------------------------------------------------- labels
+  function seatName(state, s) {
+    if (state.seats && state.seats[s] && state.seats[s].name) return state.seats[s].name;
+    return 'Seat ' + s;
+  }
+  function trumpLabel(state) {
+    if (!state.trumpSuit) return 'No-trump';
+    return SUIT_SYM[state.trumpSuit] + ' ' + SUIT_NAME[state.trumpSuit];
+  }
+  function bidLabel(b) {
+    if (!b) return '';
+    if (b.type === 'pass') return 'Pass';
+    if (b.type === 'board') return 'BOARD';
+    if (b.type === 'boston') return 'BOSTON';
+    return 'bids ' + b.value;
+  }
+
+  function pushLog(state, msg) {
+    if (!state.log) state.log = [];
+    state.log.push(msg);
+    if (state.log.length > 160) state.log = state.log.slice(-160);
+  }
+
+  function normalizeBid(bid, state) {
+    if (!bid) return null;
+    if (bid.type === 'pass') return { type: 'pass', value: 0 };
+    if (bid.type === 'board') return { type: 'board', value: state.handSize };
+    if (bid.type === 'boston') {
+      if (state.handSize < 6) return null;
+      return { type: 'boston', value: 6 };
+    }
+    if (bid.type === 'num') {
+      var v = parseInt(bid.value, 10);
+      if (isNaN(v)) return null;
+      if (v < 0) v = 0;
+      if (v > state.handSize) v = state.handSize;
+      if (v === 0) return { type: 'pass', value: 0 };
+      return { type: 'num', value: v };
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------- dealing
+  function dealHand(state) {
+    var handSize = SEQ[state.dealIndex];
+    state.handSize = handSize;
+    var deck = shuffle(makeDeck());
+    state.hands = { 0: [], 1: [], 2: [], 3: [] };
+    var idx = 0, r, s;
+    for (r = 0; r < handSize; r++) {
+      for (s = 0; s < 4; s++) state.hands[s].push(deck[idx++]);
+    }
+    var flip = deck[idx++];
+    // House rule: a joker flipped for trump is burned for the round and the next
+    // card is flipped instead. Only if the remaining stack is nothing but jokers
+    // (possible on the 13-card deals) does the hand fall back to no-trump.
+    state.burnedJokers = [];
+    while (flip && flip.joker && idx < deck.length) {
+      state.burnedJokers.push(flip);
+      flip = deck[idx++];
+    }
+    if (flip && flip.joker) { state.burnedJokers.push(flip); flip = null; }
+    state.flippedCard = flip;
+    state.trumpSuit = (flip && !flip.joker) ? flip.suit : null;
+    if (state.burnedJokers.length) {
+      pushLog(state, state.burnedJokers.map(cardLabel).join(' and ') +
+        ' flipped for trump and burned. ' +
+        (flip ? cardLabel(flip) + ' sets trump.' : 'No cards left to flip; no-trump.'));
+    }
+    for (s = 0; s < 4; s++) state.hands[s] = sortHand(state.hands[s], state.trumpSuit);
+
+    state.trumpBroken = false;
+    state.bids = {};
+    state.tricksWon = { 0: 0, 1: 0, 2: 0, 3: 0 };
+    state.trickWinnersTeam = [];
+    state.currentTrick = [];
+    state.awaitingTrickClear = false;
+    state.trickCount = 0;
+    state.lastTrickWinner = null;
+    state.lastHandResult = null;
+
+    var d = state.dealerSeat;
+    state.bidOrder = [(d + 1) % 4, (d + 2) % 4, (d + 3) % 4, d];
+    state.bidIndex = 0;
+    state.turnSeat = state.bidOrder[0];
+    state.phase = 'bidding';
+    return state;
+  }
+
+  // ---------------------------------------------------------------- bidding end
+  function determineLeader(state) {
+    var order = state.bidOrder;
+    var boards = order.filter(function (s) { return state.bids[s].type === 'board'; });
+    if (boards.length) return boards[boards.length - 1];
+    var bostons = order.filter(function (s) { return state.bids[s].type === 'boston'; });
+    if (bostons.length) return bostons[bostons.length - 1];
+    var best = null, bestVal = -1, i, s, v;
+    for (i = 0; i < order.length; i++) {
+      s = order[i];
+      v = state.bids[s].type === 'num' ? state.bids[s].value : 0;
+      if (v > bestVal) { bestVal = v; best = s; }
+    }
+    return best == null ? order[0] : best;
+  }
+
+  function finalizeBidding(state) {
+    var allPass = [0, 1, 2, 3].every(function (s) {
+      return state.bids[s] && state.bids[s].type === 'pass';
+    });
+    if (allPass) {
+      state.dealerSeat = (state.dealerSeat + 1) % 4;
+      pushLog(state, 'All four passed. ' + seatName(state, state.dealerSeat) + ' redeals.');
+      dealHand(state);
+      return;
+    }
+    var leader = determineLeader(state);
+    state.phase = 'playing';
+    state.turnSeat = leader;
+    state.trickLeader = leader;
+    state.currentTrick = [];
+    pushLog(state, seatName(state, leader) + ' leads the first trick.');
+  }
+
+  // ---------------------------------------------------------------- trick end
+  function resolveTrick(state) {
+    var wi = trickWinnerIndex(state.currentTrick, state.trumpSuit);
+    var winner = state.currentTrick[wi].seat;
+    state.tricksWon[winner]++;
+    state.trickWinnersTeam.push(team(winner));
+    state.trickCount++;
+    var parts = state.currentTrick.map(function (p) {
+      return seatName(state, p.seat) + ' ' + cardLabel(p.card);
+    });
+    pushLog(state, 'Trick ' + state.trickCount + ' to ' + seatName(state, winner) +
+      ' (' + parts.join(', ') + ').');
+    state.currentTrick = [];
+    state.lastTrickWinner = winner;
+    var done = state.hands[0].length === 0 && state.hands[1].length === 0 &&
+      state.hands[2].length === 0 && state.hands[3].length === 0;
+    if (done) {
+      scoreHand(state);
+      state.phase = 'handScored';
+    } else {
+      state.turnSeat = winner;
+      state.trickLeader = winner;
+    }
+  }
+
+  // ---------------------------------------------------------------- scoring
+  function scoreHand(state) {
+    var hs = state.handSize;
+    var type = {}, combined = {}, t, seats;
+    for (t = 0; t <= 1; t++) {
+      seats = [t, t + 2];
+      if (seats.some(function (s) { return state.bids[s].type === 'board'; })) type[t] = 'board';
+      else if (seats.some(function (s) { return state.bids[s].type === 'boston'; })) type[t] = 'boston';
+      else type[t] = 'num';
+      combined[t] = seats.reduce(function (a, s) {
+        return a + (state.bids[s].type === 'num' ? state.bids[s].value : 0);
+      }, 0);
+    }
+    var boardCount = (type[0] === 'board' ? 1 : 0) + (type[1] === 'board' ? 1 : 0);
+    var teamTricks = {
+      0: state.tricksWon[0] + state.tricksWon[2],
+      1: state.tricksWon[1] + state.tricksWon[3]
+    };
+    var result = { teams: {}, handSize: hs };
+    for (t = 0; t <= 1; t++) {
+      var delta = 0, line = '';
+      if (type[t] === 'board') {
+        var mult = boardCount === 2 ? 3 : 2;
+        var base = hs * 10;
+        var nm = mult === 3 ? 'Double board' : 'Board';
+        if (teamTricks[t] === hs) { delta = mult * base; line = nm + ' made: +' + delta; }
+        else { delta = -mult * base; line = nm + ' set: ' + delta; }
+      } else if (type[t] === 'boston') {
+        var got = state.trickWinnersTeam.length >= 6 &&
+          state.trickWinnersTeam.slice(0, 6).every(function (w) { return w === t; });
+        delta = got ? 100 : -100;
+        line = got ? 'Boston made: +100' : 'Boston set: -100';
+      } else {
+        var bid = combined[t], tr = teamTricks[t];
+        if (tr >= bid) {
+          var over = tr - bid;
+          delta = bid * 10 + over;
+          line = 'Bid ' + bid + ', took ' + tr + ': +' + delta +
+            (over ? ' (' + (bid * 10) + ' + ' + over + ' over)' : '');
+        } else {
+          delta = -(bid * 10);
+          line = 'Bid ' + bid + ', took ' + tr + ': ' + delta + ' (set)';
+        }
+      }
+      state.scores[t] += delta;
+      result.teams[t] = { delta: delta, line: line, tricks: teamTricks[t], type: type[t], bid: combined[t] };
+    }
+    result.totals = { 0: state.scores[0], 1: state.scores[1] };
+    state.lastHandResult = result;
+    pushLog(state, 'Hand scored. Team A ' + signed(result.teams[0].delta) +
+      ', Team B ' + signed(result.teams[1].delta) +
+      '. Totals A ' + state.scores[0] + ' / B ' + state.scores[1] + '.');
+  }
+  function signed(n) { return (n >= 0 ? '+' : '') + n; }
+
+  // ---------------------------------------------------------------- reducer
+  function reduce(state, action) {
+    state = clone(state);
+    if (!action) return state;
+    switch (action.type) {
+      case 'startGame': {
+        if (state.phase !== 'lobby') return state;
+        if (!state.seats) state.seats = {};
+        for (var s = 0; s < 4; s++) {
+          if (!state.seats[s]) state.seats[s] = { name: BOT_NAMES[s], isBot: true, playerId: 'bot' + s };
+        }
+        state.scores = { 0: 0, 1: 0 };
+        state.dealIndex = 0;
+        state.dealerSeat = Math.floor(Math.random() * 4);
+        state.log = [];
+        dealHand(state);
+        pushLog(state, 'Game on. Deal 1 of ' + SEQ.length + '. ' +
+          seatName(state, state.dealerSeat) + ' deals. Trump: ' + trumpLabel(state) + '.');
+        return state;
+      }
+      case 'bid': {
+        if (state.phase !== 'bidding' || action.seat !== state.turnSeat) return state;
+        var b = normalizeBid(action.bid, state);
+        if (!b) return state;
+        state.bids[action.seat] = b;
+        pushLog(state, seatName(state, action.seat) + ': ' + bidLabel(b) + '.');
+        state.bidIndex++;
+        if (state.bidIndex >= 4) finalizeBidding(state);
+        else state.turnSeat = state.bidOrder[state.bidIndex];
+        return state;
+      }
+      case 'play': {
+        if (state.phase !== 'playing' || action.seat !== state.turnSeat) return state;
+        var hand = state.hands[action.seat];
+        var card = hand.filter(function (c) { return c.id === action.cardId; })[0];
+        if (!card) return state;
+        var legal = legalPlays(state, action.seat);
+        if (!legal.some(function (c) { return c.id === card.id; })) return state;
+        state.hands[action.seat] = hand.filter(function (c) { return c.id !== card.id; });
+        state.currentTrick.push({ seat: action.seat, card: card });
+        if (isTrump(card, state.trumpSuit)) state.trumpBroken = true;
+        if (state.currentTrick.length < 4) {
+          state.turnSeat = (action.seat + 1) % 4;
+        } else {
+          // Trick complete. Leave all four cards on the table and pause; the runner
+          // dispatches 'clearTrick' after a short hold so the last card is visible.
+          state.awaitingTrickClear = true;
+          state.turnSeat = -1;
+        }
+        return state;
+      }
+      case 'clearTrick': {
+        if (state.phase !== 'playing' || !state.awaitingTrickClear) return state;
+        state.awaitingTrickClear = false;
+        resolveTrick(state);
+        return state;
+      }
+      case 'nextHand': {
+        if (state.phase !== 'handScored') return state;
+        if (state.dealIndex >= SEQ.length - 1) { state.phase = 'finished'; return state; }
+        state.dealIndex++;
+        state.dealerSeat = (state.dealerSeat + 1) % 4;
+        dealHand(state);
+        pushLog(state, 'Deal ' + (state.dealIndex + 1) + ' of ' + SEQ.length + '. ' +
+          seatName(state, state.dealerSeat) + ' deals. Trump: ' + trumpLabel(state) + '.');
+        return state;
+      }
+      default:
+        return state;
+    }
+  }
+
+  function newLobbyState(seats) {
+    return { phase: 'lobby', seats: seats || {}, scores: { 0: 0, 1: 0 }, log: [] };
+  }
+
+  // ---------------------------------------------------------------- bot: bidding
+  function botChooseBid(state, seat, difficulty) {
+    difficulty = difficulty || 'normal';
+    var hand = state.hands[seat], ts = state.trumpSuit, exp = 0, i, c, s, suited, hasA, hasK, n;
+    var hasBig = hand.some(function (x) { return x.joker === 'big'; });
+    var hasLittle = hand.some(function (x) { return x.joker === 'little'; });
+
+    if (ts) {
+      if (hasBig) exp += 1;
+      if (hasLittle) exp += 0.95;
+      var tsuit = hand.filter(function (x) { return !x.joker && x.suit === ts; });
+      for (i = 0; i < tsuit.length; i++) {
+        c = tsuit[i];
+        if (c.rank === 14) exp += 0.9;
+        else if (c.rank === 13) exp += 0.7;
+        else if (c.rank === 12) exp += 0.45;
+        else if (c.rank === 11) exp += 0.25;
+      }
+      var trumps = hand.filter(function (x) { return isTrump(x, ts); });
+      exp += Math.max(0, trumps.length - 3) * 0.5;
+      for (i = 0; i < SUITS.length; i++) {
+        s = SUITS[i]; if (s === ts) continue;
+        suited = hand.filter(function (x) { return !x.joker && x.suit === s; });
+        hasA = suited.some(function (x) { return x.rank === 14; });
+        hasK = suited.some(function (x) { return x.rank === 13; });
+        if (hasA) exp += 0.8;
+        if (hasK) exp += suited.length > 1 ? 0.4 : 0.2;
+      }
+      if (trumps.length > 0) {
+        for (i = 0; i < SUITS.length; i++) {
+          s = SUITS[i]; if (s === ts) continue;
+          n = hand.filter(function (x) { return !x.joker && x.suit === s; }).length;
+          if (n === 0) exp += 0.4; else if (n === 1) exp += 0.2;
+        }
+      }
+    } else {
+      if (hasBig) exp += 1;
+      if (hasLittle) exp += 0.9;
+      for (i = 0; i < SUITS.length; i++) {
+        s = SUITS[i];
+        suited = hand.filter(function (x) { return !x.joker && x.suit === s; });
+        hasA = suited.some(function (x) { return x.rank === 14; });
+        hasK = suited.some(function (x) { return x.rank === 13; });
+        if (hasA) exp += 0.85;
+        if (hasK && suited.length > 1) exp += 0.35;
+      }
+    }
+
+    // Difficulty adjustments
+    if (difficulty === 'easy') exp *= 0.75;    // bid less aggressively
+    if (difficulty === 'expert') exp *= 1.25;  // bid more aggressively
+
+    var bid = Math.round(exp);
+    if (bid < 0) bid = 0;
+    if (bid > state.handSize) bid = state.handSize;
+    if (state.handSize <= 2 && bid >= state.handSize && (hasBig || hasLittle)) {
+      return { type: 'board', value: state.handSize };
+    }
+    if (bid === 0) return { type: 'pass', value: 0 };
+    return { type: 'num', value: bid };
+  }
+
+  // ---------------------------------------------------------------- bot: play
+  function botSideBid(state, t) {
+    var seats = [t, t + 2];
+    if (seats.some(function (s) { return state.bids[s] && state.bids[s].type === 'board'; })) return 999;
+    if (seats.some(function (s) { return state.bids[s] && state.bids[s].type === 'boston'; })) return 6;
+    return seats.reduce(function (a, s) {
+      return a + ((state.bids[s] && state.bids[s].type === 'num') ? state.bids[s].value : 0);
+    }, 0);
+  }
+  function cardPlayValue(c, ts) {
+    if (isTrump(c, ts)) return 100 + trumpStrength(c);
+    return c.rank;
+  }
+
+  function botChoosePlay(state, seat, difficulty) {
+    difficulty = difficulty || 'normal';
+    var ts = state.trumpSuit;
+    var legal = legalPlays(state, seat);
+    if (legal.length === 1) return legal[0];
+    var trick = state.currentTrick;
+    var myTeam = team(seat);
+    var sideBoard = teamDeclaredBoard(state, myTeam);
+    var sideTricks = state.tricksWon[seat] + state.tricksWon[partner(seat)];
+    var sideBid = botSideBid(state, myTeam);
+    var greedy = sideBoard || sideTricks < sideBid;
+
+    var lowFirst = legal.slice().sort(function (a, b) {
+      return cardPlayValue(a, ts) - cardPlayValue(b, ts);
+    });
+
+    function beats(card) {
+      var t2 = trick.concat([{ seat: seat, card: card }]);
+      return trickWinnerIndex(t2, ts) === t2.length - 1;
+    }
+
+    if (trick.length === 0) {
+      if (greedy) {
+        var aces = legal.filter(function (c) { return !isTrump(c, ts) && c.rank === 14; });
+        if (aces.length) return aces[0];
+        var kings = legal.filter(function (c) { return !isTrump(c, ts) && c.rank === 13; });
+        if (kings.length) return kings[0];
+        var tr = legal.filter(function (c) { return isTrump(c, ts); })
+          .sort(function (a, b) { return trumpStrength(b) - trumpStrength(a); });
+        if (tr.length && (state.trumpBroken || sideBoard)) return tr[0];
+        var nt = legal.filter(function (c) { return !isTrump(c, ts); })
+          .sort(function (a, b) { return b.rank - a.rank; });
+        if (nt.length) return nt[0];
+        return lowFirst[lowFirst.length - 1];
+      }
+      // On expert: lead low non-trump to disguise hand strength
+      if (difficulty === 'expert') {
+        var ntLow = legal.filter(function (c) { return !isTrump(c, ts); })
+          .sort(function (a, b) { return a.rank - b.rank; });
+        if (ntLow.length) return ntLow[0];
+      }
+      // On easy: more random, less strategic
+      var ntLow2 = legal.filter(function (c) { return !isTrump(c, ts); })
+        .sort(function (a, b) { return a.rank - b.rank; });
+      if (ntLow2.length) return ntLow2[0];
+      return lowFirst[0];
+    }
+
+    var wi = trickWinnerIndex(trick, ts);
+    var winnerEntry = trick[wi];
+    var partnerWinning = team(winnerEntry.seat) === myTeam;
+
+    if (partnerWinning && !sideBoard) return lowFirst[0];
+
+    if (greedy) {
+      var beating = lowFirst.filter(function (c) { return beats(c); });
+      if (beating.length) {
+        // On expert: choose the cheapest card that beats
+        if (difficulty === 'expert') return beating[0];
+        // On easy: more likely to waste high cards
+        if (difficulty === 'easy' && beating.length > 1) return beating[Math.floor(beating.length * 0.7)];
+        return beating[0];
+      }
+      return lowFirst[0];
+    }
+    return lowFirst[0];
+  }
+
+  function botAction(state, difficulty) {
+    difficulty = difficulty || 'normal'; // default to normal
+    if (state.phase === 'playing' && state.awaitingTrickClear) {
+      return { type: 'clearTrick' };
+    }
+    if (state.phase === 'bidding') {
+      return { type: 'bid', seat: state.turnSeat, bid: botChooseBid(state, state.turnSeat, difficulty) };
+    }
+    if (state.phase === 'playing') {
+      return { type: 'play', seat: state.turnSeat, cardId: botChoosePlay(state, state.turnSeat, difficulty).id };
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------------- export
+  var BAB = {
+    SUITS: SUITS, SUIT_SYM: SUIT_SYM, SUIT_NAME: SUIT_NAME, RANKS: RANKS, SEQ: SEQ,
+    BOT_NAMES: BOT_NAMES,
+    rankLabel: rankLabel, makeDeck: makeDeck, isTrump: isTrump, trumpStrength: trumpStrength,
+    effSuit: effSuit, team: team, partner: partner, cardLabel: cardLabel, sortHand: sortHand,
+    legalPlays: legalPlays, trickWinnerIndex: trickWinnerIndex, seatName: seatName,
+    trumpLabel: trumpLabel, bidLabel: bidLabel, normalizeBid: normalizeBid, reduce: reduce,
+    newLobbyState: newLobbyState, botChooseBid: botChooseBid, botChoosePlay: botChoosePlay,
+    botAction: botAction
+  };
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = BAB;
+  root.BAB = BAB;
+})(typeof window !== 'undefined' ? window : this);
+
+  </script>
+
+  <!-- Interface + local runner + Firebase realtime online runner. -->
+  <script>
+/* Back Alley Bridge - app layer (UI + local runner + online runner)
+ *
+ * Depends on engine.js (global BAB). Online play uses the artifact shared-storage
+ * API (window.storage with shared:true) as the sync backend, so there is no Firebase
+ * project to set up and no server to run. Local "vs bots" play needs no network.
+ *
+ * Online model: one player's device is the host. The host runs the engine and the
+ * bots and writes the whole game state to a shared room key. Everyone polls that key
+ * and renders their own view. A non-host on their turn writes a move to their own
+ * shared key; the host consumes it, advances the engine, and republishes the state.
+ */
+(function () {
+  'use strict';
+
+  var E = window.BAB;
+  var app = document.getElementById('app');
+
+  // ----------------------------------------------------------- module state
+  var MODE = 'home';            // 'home' | 'localGame' | 'onlineLobby' | 'onlineGame'
+  var STATE = null;             // game state (authoritative on host, mirror elsewhere)
+  var mySeat = 0;               // viewer seat
+  var myName = 'You';
+  var myId = null;
+  var botDifficulty = 'normal'; // 'easy' | 'normal' | 'expert'
+
+  // online
+  var roomCode = null, isHost = false, room = null, roomLive = false;
+  var lastVer = -1, awaiting = false;
+  var hostTimer = null, hostBeatTimer = null;
+  var db = null, fbApp = null, listeners = [];
+
+  // timers / cadence
+  var localTimer = null;
+  var BID_DELAY = 650, PLAY_DELAY = 750, NEXT_DELAY = 4200, TRICK_HOLD = 850;
+  var BEAT_EVERY = 4000, HOST_STALE = 16000;
+
+  // Firebase config can come from three places, in priority order: the invite
+  // link hash (#fb=...), a config the user pasted in-app earlier (window.name),
+  // or the block baked into this file. onlineReady() reflects the live value.
+  var FB = window.FIREBASE_CONFIG || {};
+  function onlineReady() { return !!(FB && FB.databaseURL && window.firebase); }
+
+  // ----------------------------------------------------------- small helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function $(id) { return document.getElementById(id); }
+  function val(id) { var e = $(id); return e ? e.value.trim() : ''; }
+  function genCode() {
+    var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', s = '';
+    for (var i = 0; i < 4; i++) s += L[Math.floor(Math.random() * L.length)];
+    return s;
+  }
+  function uuid() {
+    return ('p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)).replace(/[^a-z0-9]/gi, '');
+  }
+  // Identity + last room survive a reload within the same tab via window.name
+  // (localStorage is unavailable in the artifact sandbox).
+  function loadIdentity() {
+    var saved = {};
+    try { saved = JSON.parse(window.name || '{}') || {}; } catch (e) { saved = {}; }
+    if (!saved.id || /[^a-z0-9]/i.test(saved.id)) { saved.id = uuid(); persistIdentity(saved); }
+    myId = saved.id;
+    return saved;
+  }
+  function persistIdentity(obj) { try { window.name = JSON.stringify(obj); } catch (e) {} }
+  function rememberRoom(code) {
+    var saved = {}; try { saved = JSON.parse(window.name || '{}') || {}; } catch (e) {}
+    saved.id = myId; saved.room = code; persistIdentity(saved);
+  }
+  function lastRoom() {
+    try { return (JSON.parse(window.name || '{}') || {}).room || ''; } catch (e) { return ''; }
+  }
+  function persistFb(cfg) {
+    var saved = {}; try { saved = JSON.parse(window.name || '{}') || {}; } catch (e) {}
+    saved.id = myId; saved.fb = cfg; persistIdentity(saved);
+  }
+  function b64enc(s) { try { return btoa(unescape(encodeURIComponent(s))); } catch (e) { return ''; } }
+  function b64dec(s) { try { return decodeURIComponent(escape(atob(s))); } catch (e) { return null; } }
+  function hashParams() {
+    var h = (location.hash || '').replace(/^#/, ''), out = {};
+    h.split('&').forEach(function (kv) {
+      var i = kv.indexOf('='); if (i < 0) return;
+      out[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1));
+    });
+    return out;
+  }
+  // Adopt config from an invite link or a previously pasted config, and prefill
+  // the room code from the link so a family member only types their name.
+  function initFromHashAndSaved(saved) {
+    var hp = hashParams();
+    if (hp.fb) {
+      var cfg = null, dec = b64dec(hp.fb);
+      if (dec) { try { cfg = JSON.parse(dec); } catch (e) { cfg = null; } }
+      if (cfg && cfg.databaseURL) { FB = cfg; persistFb(cfg); }
+    } else if (saved.fb && saved.fb.databaseURL && !(FB && FB.databaseURL)) {
+      FB = saved.fb;
+    }
+    if (hp.room && /^[A-Z]{4}$/i.test(hp.room)) rememberRoom(hp.room.toUpperCase());
+  }
+
+  function rel(seat) { return ((seat - mySeat) + 4) % 4; }
+  function isBotSeat(seat) { return STATE && STATE.seats && STATE.seats[seat] && STATE.seats[seat].isBot; }
+  function usTeam() { return E.team(mySeat); }
+
+  // Firebase Realtime Database transport. Players sign in anonymously (invisible,
+  // no account), so updates arrive over a live socket in well under a second.
+  function safeParse(s) { try { return JSON.parse(s); } catch (e) { return null; } }
+  function ensureFirebase() {
+    if (db) return Promise.resolve(true);
+    if (!onlineReady()) return Promise.resolve(false);
+    try {
+      fbApp = (firebase.apps && firebase.apps.length) ? firebase.app() : firebase.initializeApp(FB);
+      db = firebase.database();
+    } catch (e) { return Promise.resolve(false); }
+    return firebase.auth().signInAnonymously()
+      .then(function () { return true; })
+      .catch(function () { return true; }); // proceed; open rules still work
+  }
+  function roomPath() { return 'rooms/' + roomCode; }
+  function docRef() { return db.ref(roomPath() + '/doc'); }
+  function addPresence() {
+    var ref = db.ref(roomPath() + '/players/' + myId);
+    ref.set({ id: myId, name: myName || 'Player', ts: Date.now() });
+    ref.onDisconnect().remove();
+  }
+  function detachListeners() {
+    listeners.forEach(function (l) { try { l.ref.off(l.ev, l.cb); } catch (e) {} });
+    listeners = [];
+  }
+
+  function cardFaceHTML(card, mini) {
+    var cls = 'card-face' + (mini ? ' mini' : '');
+    if (card.joker) {
+      var big = card.joker === 'big';
+      return '<span class="' + cls + ' blooper ' + (big ? 'big' : 'little') + '">' +
+        '<span class="rk">' + (big ? 'BIG' : 'LIL') + '</span>' +
+        '<span class="st">&#9733;</span>' +
+        '<span class="rk">JOKER</span></span>';
+    }
+    var red = (card.suit === 'H' || card.suit === 'D');
+    return '<span class="' + cls + (red ? ' red' : '') + '">' +
+      '<span class="rk">' + E.rankLabel(card.rank) + '</span>' +
+      '<span class="st">' + E.SUIT_SYM[card.suit] + '</span></span>';
+  }
+
+  // ----------------------------------------------------------- render dispatch
+  function render() {
+    if (MODE === 'home') return renderHome();
+    if (MODE === 'onlineLobby') return renderLobby();
+    if (MODE === 'localGame' || MODE === 'onlineGame') return renderTable();
+    renderHome();
+  }
+
+  function renderHome() {
+    var online = window.firebase
+      ? '<button class="btn" data-act="go-online">Play online</button>'
+      : '<button class="btn" disabled>Play online</button>' +
+        '<div class="note warn-note">The Firebase scripts could not load (offline or blocked), so online play is unavailable right now. Play vs bots still works.</div>';
+    app.innerHTML =
+      '<div class="home-hero">' +
+        '<div class="eyebrow">Partnership trick-taking</div>' +
+        '<h1>Back Alley Bridge</h1>' +
+        '<div class="stencil-rule"></div>' +
+        '<div class="sub">Four hands, fixed partners, twenty-five deals from thirteen cards down to one and back up. Jokers are wild, the flipped card calls trump, and the only way out of a bid is to make it.</div>' +
+      '</div>' +
+      '<div class="card-panel" style="max-width:420px;margin:18px auto 0;">' +
+        '<div class="field"><label for="nameInput">Your name</label>' +
+        '<input id="nameInput" type="text" maxlength="18" placeholder="' + esc(myName) + '" value="' + (myName === 'You' ? '' : esc(myName)) + '"></div>' +
+        '<div class="field"><label for="difficultyInput">Bot difficulty (vs bots only)</label>' +
+        '<select id="difficultyInput" style="width:100%;background:#11150f;color:var(--bone);border:1px solid var(--line);border-radius:4px;padding:11px 12px;font-size:16px;font-family:var(--body)">' +
+          '<option value="easy">Easy</option>' +
+          '<option value="normal" selected>Normal</option>' +
+          '<option value="expert">Expert</option>' +
+        '</select></div>' +
+        '<div class="home-actions">' +
+          '<button class="btn-accent btn" data-act="local-start">Play vs bots</button>' +
+          online +
+        '</div>' +
+      '</div>';
+  }
+
+  // ----------------------------------------------------------- lobby (online)
+  function currentSeats() {
+    if (STATE && STATE.seats && MODE === 'onlineGame') return STATE.seats;
+    if (room && room.seats) return arrayToSeats(room.seats);
+    return {};
+  }
+  function seatArray() {
+    var seats = currentSeats(), arr = [];
+    for (var i = 0; i < 4; i++) arr.push(seats[i] || null);
+    return arr;
+  }
+  function computeMySeat() {
+    var arr = seatArray();
+    for (var i = 0; i < 4; i++) if (arr[i] && arr[i].playerId === myId) return i;
+    return -1;
+  }
+
+  function renderLobby() {
+    var seats = seatArray();
+    var seated = computeMySeat();
+    var rows = '';
+    for (var i = 0; i < 4; i++) {
+      var s = seats[i];
+      var teamLab = (i % 2 === 0) ? 'Team A' : 'Team B';
+      var youMark = (s && s.playerId === myId) ? ' you' : '';
+      var occupant = s
+        ? esc(s.name) + (s.isBot ? ' <span class="tag">bot</span>' : '') + (s.playerId === myId ? ' <span class="tag">you</span>' : '')
+        : '<span class="muted">Open &middot; a bot fills in at start</span>';
+      rows += '<div class="seat-card' + youMark + '"><div><div class="nm display">Seat ' + i + ' &middot; ' + teamLab + '</div><div style="margin-top:4px">' + occupant + '</div></div></div>';
+    }
+    var startBtn = isHost
+      ? '<button class="btn-accent btn" data-act="start-game">Start match</button>'
+      : '<div class="muted display" style="align-self:center">' +
+        (seated < 0 ? 'Finding you a seat...' : 'Waiting for the host to start.') + '</div>';
+    var shareBtns =
+      '<div class="row" style="margin-top:6px">' +
+        (navigator.share ? '<button class="btn-accent btn btn-sm" data-act="share-room">Share invite</button>' : '') +
+        '<button class="btn btn-sm" data-act="copy-invite">Copy invite link</button>' +
+        '<button class="btn btn-sm" data-act="copy-code">Copy code</button>' +
+      '</div>';
+    app.innerHTML =
+      '<div class="spread" style="margin-bottom:10px"><div class="eyebrow">Room</div>' +
+      '<button class="btn btn-ghost btn-sm" data-act="home">Leave</button></div>' +
+      '<div class="card-panel">' +
+        '<div class="spread"><div><div class="eyebrow">Share this code</div>' +
+        '<div class="code-chip">' + esc(roomCode || '----') + '</div>' + shareBtns + '</div>' +
+        '<div class="muted" style="max-width:240px">Everyone opens your link, taps Play online, and enters this code. No account needed. Up to four people; any open seats play as bots.</div></div>' +
+        '<hr class="divider">' +
+        '<div class="seat-list">' + rows + '</div>' +
+        '<div class="row" style="justify-content:flex-end">' + startBtn + '</div>' +
+      '</div>';
+  }
+
+  // ----------------------------------------------------------- table
+  function seatPanel(seat, sideClass) {
+    var seats = currentSeats();
+    var s = seats[seat] || { name: 'Seat ' + seat, isBot: false };
+    var isYou = (seat === mySeat);
+    var turn = (STATE.phase === 'bidding' || STATE.phase === 'playing') && STATE.turnSeat === seat;
+    var dealer = STATE.dealerSeat === seat;
+    var nameLine = '<div class="nm">' + (isYou ? 'You' : esc(s.name)) +
+      (s.isBot ? ' <span class="chip bot">bot</span>' : '') +
+      (dealer ? ' <span class="chip">deal</span>' : '') + '</div>';
+
+    var bidLine;
+    if (STATE.bids && STATE.bids[seat]) {
+      var b = STATE.bids[seat];
+      var cls = b.type === 'board' ? 'board' : (b.type === 'boston' ? 'boston' : '');
+      var txt = b.type === 'pass' ? 'pass' : (b.type === 'board' ? 'BOARD' : (b.type === 'boston' ? 'BOSTON' : b.value));
+      bidLine = '<span class="bidv ' + cls + '">' + txt + '</span>';
+    } else {
+      bidLine = '<span class="muted">--</span>';
+    }
+    var tricks = STATE.tricksWon ? STATE.tricksWon[seat] : 0;
+    var meta = '<div class="meta-line"><span>bid ' + bidLine + '</span><span class="trk">tricks ' + tricks + '</span></div>';
+    return '<div class="seat ' + (sideClass || '') + (turn ? ' turn' : '') + '">' + nameLine + meta + '</div>';
+  }
+
+  function trickSlotFor(targetRel) {
+    var trick = STATE.currentTrick || [];
+    for (var i = 0; i < trick.length; i++) {
+      if (rel(trick[i].seat) === targetRel) return cardFaceHTML(trick[i].card, true);
+    }
+    return '';
+  }
+
+  function renderTopbar() {
+    var us = usTeam(), them = 1 - us;
+    var usScore = STATE.scores[us], themScore = STATE.scores[them];
+    var usLead = usScore > themScore ? ' lead' : '';
+    var themLead = themScore > usScore ? ' lead' : '';
+    var tally =
+      '<div class="tally">' +
+        '<div class="t-line t-us"><span class="t-name">Us (Team ' + (us === 0 ? 'A' : 'B') + ')</span>' +
+        '<span class="t-score' + usLead + '">' + usScore + '</span></div>' +
+        '<div class="t-line"><span class="t-name">Them</span>' +
+        '<span class="t-score' + themLead + '">' + themScore + '</span></div>' +
+      '</div>';
+
+    var trump;
+    var burned = (STATE.burnedJokers && STATE.burnedJokers.length)
+      ? '<span class="lab" style="color:var(--vermilion)">' +
+        (STATE.burnedJokers.length === 2 ? 'both jokers burned' :
+          (STATE.burnedJokers[0].joker === 'big' ? 'big joker burned' : 'lil joker burned')) + '</span>'
+      : '';
+    if (!STATE.trumpSuit) {
+      trump = '<div class="trump-ind notrump"><span class="lab">Trump</span><span class="val">No-trump</span>' + burned + '</div>';
+    } else {
+      var red = (STATE.trumpSuit === 'H' || STATE.trumpSuit === 'D');
+      var fc = STATE.flippedCard ? cardFaceHTMLFlip(STATE.flippedCard) : '';
+      trump = '<div class="trump-ind">' + fc + '<div><span class="lab">Trump</span><br>' +
+        '<span class="val' + (red ? ' red' : '') + '">' + E.SUIT_SYM[STATE.trumpSuit] + ' ' + E.SUIT_NAME[STATE.trumpSuit] + '</span>' +
+        (burned ? '<br>' + burned : '') + '</div></div>';
+    }
+    var deal = '<div class="dealmeta"><div class="deal-num">Deal ' + (STATE.dealIndex + 1) + ' of ' + E.SEQ.length + ' &middot; ' + STATE.handSize + ' cards</div>' + trump + '</div>';
+
+    var status = '';
+    if (STATE.phase === 'bidding') {
+      status = STATE.turnSeat === mySeat
+        ? '<span class="turn">Your bid</span>'
+        : 'Bidding: <span class="turn">' + esc(seatNameFor(STATE.turnSeat)) + '</span>';
+    } else if (STATE.phase === 'playing') {
+      if (STATE.awaitingTrickClear) {
+        status = '<span class="turn">Trick complete</span>';
+      } else {
+        status = STATE.turnSeat === mySeat
+          ? '<span class="turn">Your lead</span>'
+          : 'To play: <span class="turn">' + esc(seatNameFor(STATE.turnSeat)) + '</span>';
+        if (STATE.trumpSuit && !STATE.trumpBroken) status += '<br><span class="broken-flag">trump not broken</span>';
+      }
+    }
+    return '<div class="topbar">' + tally + deal + '<div class="status-line">' + status + '</div></div>';
+  }
+  function cardFaceHTMLFlip(card) {
+    if (card.joker) return '<span class="flip-card">&#9733;</span>';
+    var red = (card.suit === 'H' || card.suit === 'D');
+    return '<span class="flip-card' + (red ? ' red' : '') + '">' + E.rankLabel(card.rank) + E.SUIT_SYM[card.suit] + '</span>';
+  }
+  function seatNameFor(seat) {
+    if (seat === mySeat) return 'you';
+    var seats = currentSeats();
+    return seats[seat] ? seats[seat].name : 'Seat ' + seat;
+  }
+
+  function renderTable() {
+    if (!STATE) { renderHome(); return; }
+    if (STATE.phase === 'lobby') { renderLobby(); return; }
+
+    var topSeat = (mySeat + 2) % 4;
+    var rightSeat = (mySeat + 1) % 4;
+    var leftSeat = (mySeat + 3) % 4;
+
+    var leadHint = '';
+    if ((STATE.currentTrick || []).length === 0 && STATE.phase === 'playing') {
+      leadHint = '<div class="lead-hint">lead</div>';
+    }
+
+    var felt =
+      '<div class="felt">' +
+        '<div class="seat-row top">' + seatPanel(topSeat) + '</div>' +
+        '<div class="mid">' +
+          '<div class="seat-wrap left">' + seatPanel(leftSeat, 'side') + '</div>' +
+          '<div class="trick">' +
+            '<div class="slot t-top">' + trickSlotFor(2) + '</div>' +
+            '<div class="slot t-left">' + trickSlotFor(3) + '</div>' +
+            '<div class="slot t-mid">' + leadHint + '</div>' +
+            '<div class="slot t-right">' + trickSlotFor(1) + '</div>' +
+            '<div class="slot t-bottom">' + trickSlotFor(0) + '</div>' +
+          '</div>' +
+          '<div class="seat-wrap right">' + seatPanel(rightSeat, 'side') + '</div>' +
+        '</div>' +
+        '<div class="seat-row bottom">' + seatPanel(mySeat) + '</div>' +
+      '</div>';
+
+    var leave = '<div class="spread" style="margin-bottom:10px"><div class="eyebrow">' +
+      (MODE === 'onlineGame' ? 'Room ' + esc(roomCode || '') : 'Local match') + '</div>' +
+      '<button class="btn btn-ghost btn-sm" data-act="home">Quit</button></div>';
+
+    app.innerHTML = leave + renderTopbar() + felt + renderHand() + renderControls() + renderLog() + renderOverlay();
+    var logEl = $('logList'); if (logEl) logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function renderHand() {
+    var myHand = (STATE.hands && STATE.hands[mySeat]) ? STATE.hands[mySeat] : [];
+    var myTurnPlay = STATE.phase === 'playing' && STATE.turnSeat === mySeat && !awaiting;
+    var legalIds = {};
+    if (myTurnPlay) {
+      E.legalPlays(STATE, mySeat).forEach(function (c) { legalIds[c.id] = true; });
+    }
+    var cards = myHand.map(function (c) {
+      var playable = myTurnPlay && legalIds[c.id];
+      var cls = 'card-btn' + (STATE.phase === 'playing' && STATE.turnSeat === mySeat ? (playable ? ' playable' : ' dimmed') : '');
+      var attrs = playable ? ' data-act="play-card" data-card="' + c.id + '"' : '';
+      return '<button class="' + cls + '"' + attrs + (playable ? '' : ' tabindex="-1"') + '>' + cardFaceHTML(c, false) + '</button>';
+    }).join('');
+    return '<div class="handbar"><div class="eyebrow">Your hand</div><div class="hand">' + (cards || '<span class="muted">empty</span>') + '</div></div>';
+  }
+
+  function renderControls() {
+    if (awaiting && STATE.turnSeat === mySeat) {
+      return '<div class="controls"><div class="prompt">Sent. <span class="accent">Waiting for the table...</span></div></div>';
+    }
+    if (STATE.phase === 'playing' && STATE.turnSeat === mySeat) {
+      var tr = STATE.currentTrick || [];
+      if (tr.length && tr[0].card.joker === 'big' && (tr[0].seat % 2) !== (mySeat % 2) &&
+          (STATE.hands[mySeat] || []).some(function (c) { return E.isTrump(c, STATE.trumpSuit); })) {
+        return '<div class="controls"><div class="prompt">Big Joker led. <span class="accent">Your highest trump is forced.</span></div></div>';
+      }
+      return '<div class="controls"><div class="prompt">Tap a highlighted card to play. <span class="accent">You must follow the led suit if you can.</span></div></div>';
+    }
+    if (!(STATE.phase === 'bidding' && STATE.turnSeat === mySeat)) return '';
+    var hs = STATE.handSize;
+    var btns = '<button class="btn" data-act="bid" data-bidtype="pass">Pass</button>';
+    for (var n = 1; n <= hs; n++) {
+      btns += '<button class="btn" data-act="bid" data-bidtype="num" data-bidval="' + n + '">' + n + '</button>';
+    }
+    btns += '<button class="btn btn-accent" data-act="bid" data-bidtype="board">Board</button>';
+    if (hs >= 6) btns += '<button class="btn btn-danger" data-act="bid" data-bidtype="boston">Boston</button>';
+    return '<div class="controls"><div class="prompt">Your bid <span class="accent">(0 to ' + hs + ' tricks, or Board / ' + (hs >= 6 ? 'Boston' : 'no Boston this hand') + ')</span></div><div class="bid-grid">' + btns + '</div></div>';
+  }
+
+  function renderLog() {
+    var lines = (STATE.log || []).slice(-14).map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('');
+    return '<div class="logbox"><div class="eyebrow">Table log</div><ul class="log" id="logList">' + lines + '</ul></div>';
+  }
+
+  // ----------------------------------------------------------- overlays
+  function renderOverlay() {
+    if (STATE.phase === 'handScored' && STATE.lastHandResult) return handResultOverlay();
+    if (STATE.phase === 'finished') return gameOverOverlay();
+    return '';
+  }
+  function deltaSpan(d) {
+    return '<span class="delta ' + (d >= 0 ? 'pos' : 'neg') + '">' + (d >= 0 ? '+' : '') + d + '</span>';
+  }
+  function handResultOverlay() {
+    var r = STATE.lastHandResult, us = usTeam(), them = 1 - us;
+    function rowFor(t, label, isUs) {
+      var tr = r.teams[t];
+      return '<div class="result-row"><div class="who' + (isUs ? ' us' : '') + '">' + label +
+        '<span class="detail">' + esc(tr.line) + '</span></div>' + deltaSpan(tr.delta) + '</div>';
+    }
+    var canAdvance = (MODE === 'localGame') || isHost;
+    var advance = canAdvance
+      ? '<button class="btn-accent btn" data-act="next-hand">Next hand</button>'
+      : '<span class="waiting">Waiting for the host to deal the next hand.</span>';
+    return '<div class="overlay"><div class="sheet">' +
+      '<div class="eyebrow">Hand ' + (STATE.dealIndex + 1) + ' scored</div>' +
+      '<h2>The reckoning</h2>' +
+      rowFor(us, 'Us', true) + rowFor(them, 'Them', false) +
+      '<div class="totals"><span>Running total</span><span>Us ' + STATE.scores[us] + ' &middot; Them ' + STATE.scores[them] + '</span></div>' +
+      '<div class="actions">' + advance + '</div>' +
+      '</div></div>';
+  }
+  function gameOverOverlay() {
+    var us = usTeam(), them = 1 - us;
+    var u = STATE.scores[us], t = STATE.scores[them];
+    var head = u > t ? '<span class="gg-win">Us wins</span>' : (t > u ? '<span class="gg-lose">Them wins</span>' : 'Dead heat');
+    var again = (MODE === 'localGame')
+      ? '<button class="btn-accent btn" data-act="play-again">Play again</button>'
+      : '<button class="btn-accent btn" data-act="home">Back to start</button>';
+    return '<div class="overlay"><div class="sheet">' +
+      '<div class="eyebrow">25 deals complete</div>' +
+      '<h2>' + head + '</h2>' +
+      '<div class="result-row"><div class="who us">Us</div><span class="delta">' + u + '</span></div>' +
+      '<div class="result-row"><div class="who">Them</div><span class="delta">' + t + '</span></div>' +
+      '<div class="actions"><button class="btn btn-ghost" data-act="home">Home</button>' + again + '</div>' +
+      '</div></div>';
+  }
+
+  // ----------------------------------------------------------- local runner
+  function startLocal() {
+    var nm = val('nameInput'); if (nm) myName = nm;
+    var diff = $('difficultyInput');
+    if (diff) botDifficulty = diff.value || 'normal';
+    MODE = 'localGame'; mySeat = 0;
+    var seats = {}; seats[0] = { name: myName || 'You', isBot: false, playerId: 'you' };
+    STATE = E.newLobbyState(seats);
+    STATE = E.reduce(STATE, { type: 'startGame' });
+    render();
+    scheduleLocal();
+  }
+  function dispatchLocal(action) {
+    STATE = E.reduce(STATE, action);
+    render();
+    scheduleLocal();
+  }
+  function scheduleLocal() {
+    if (localTimer) { clearTimeout(localTimer); localTimer = null; }
+    if (!STATE) return;
+    if (STATE.phase === 'playing' && STATE.awaitingTrickClear) {
+      localTimer = setTimeout(function () { dispatchLocal({ type: 'clearTrick' }); }, TRICK_HOLD);
+    } else if ((STATE.phase === 'bidding' || STATE.phase === 'playing') && isBotSeat(STATE.turnSeat)) {
+      var delay = STATE.phase === 'bidding' ? BID_DELAY : PLAY_DELAY;
+      localTimer = setTimeout(function () { var a = E.botAction(STATE, botDifficulty); if (a) dispatchLocal(a); }, delay);
+    } else if (STATE.phase === 'handScored') {
+      localTimer = setTimeout(function () { dispatchLocal({ type: 'nextHand' }); }, NEXT_DELAY);
+    }
+  }
+  function playAgainLocal() { startLocal(); }
+
+  // ----------------------------------------------------------- online runner
+  function goOnline() {
+    var nm = val('nameInput'); if (nm) myName = nm;
+    if (!window.firebase) { render(); return; }
+    if (!(FB && FB.databaseURL)) { renderFbSetup(); return; }
+    MODE = 'onlineLobby'; room = null; roomCode = null;
+    app.innerHTML =
+      '<div class="spread" style="margin-bottom:10px"><div class="eyebrow">Online</div>' +
+      '<button class="btn btn-ghost btn-sm" data-act="home">Back</button></div>' +
+      '<div class="card-panel" style="max-width:460px;margin:0 auto">' +
+        '<div class="field"><label for="nameInput2">Your name</label>' +
+        '<input id="nameInput2" type="text" maxlength="18" value="' + esc(myName === 'You' ? '' : myName) + '" placeholder="Your name"></div>' +
+        '<hr class="divider">' +
+        '<button class="btn-accent btn" style="width:100%" data-act="create-room">Create a room</button>' +
+        '<div class="note">You become the host. Share the invite link that appears. Players need no account.</div>' +
+        '<hr class="divider">' +
+        '<div class="field"><label for="codeInput">Join with a code</label>' +
+        '<input id="codeInput" type="text" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD" value="' + esc(lastRoom()) + '"></div>' +
+        '<button class="btn" style="width:100%" data-act="join-room">Join room</button>' +
+        '<div id="onlineErr" class="note warn-note"></div>' +
+      '</div>';
+  }
+
+  // One-time host setup: paste the firebaseConfig snippet from the Firebase
+  // console. Guests never see this screen because invite links carry the config.
+  function renderFbSetup() {
+    MODE = 'home';
+    app.innerHTML =
+      '<div class="spread" style="margin-bottom:10px"><div class="eyebrow">Online setup</div>' +
+      '<button class="btn btn-ghost btn-sm" data-act="home">Back</button></div>' +
+      '<div class="card-panel" style="max-width:520px;margin:0 auto">' +
+        '<div class="eyebrow">One time, host only</div>' +
+        '<p class="muted" style="margin:8px 0 4px">If someone sent you an invite link, you do not need this. Just open their link.</p>' +
+        '<p class="muted" style="margin:4px 0 10px">Hosting for the first time: in the Firebase console open Project settings, Your apps, and copy the whole <span style="color:var(--brass)">firebaseConfig</span> block. Paste it below exactly as copied.</p>' +
+        '<div class="field"><label for="fbConfigInput">Paste firebaseConfig here</label>' +
+        '<textarea id="fbConfigInput" rows="8" style="width:100%;background:#11150f;color:var(--bone);border:1px solid var(--line);border-radius:4px;padding:10px;font-family:monospace;font-size:13px" placeholder=\'const firebaseConfig = {\n  apiKey: "...",\n  databaseURL: "https://...firebaseio.com",\n  ...\n};\'></textarea></div>' +
+        '<button class="btn-accent btn" style="width:100%" data-act="save-fb">Save and continue</button>' +
+        '<div id="fbErr" class="note warn-note"></div>' +
+      '</div>';
+  }
+  function saveFbConfig() {
+    var raw = ($('fbConfigInput') && $('fbConfigInput').value) || '';
+    var cfg = null;
+    try { cfg = JSON.parse(raw); } catch (e) { cfg = null; }
+    if (!cfg) {
+      cfg = {};
+      var m, re = /(\w+)\s*:\s*["']([^"']*)["']/g;
+      while ((m = re.exec(raw)) !== null) cfg[m[1]] = m[2];
+    }
+    if (!cfg.databaseURL || !/^https:\/\//.test(cfg.databaseURL)) {
+      var e2 = $('fbErr');
+      if (e2) e2.textContent = 'No databaseURL found. In Firebase, create a Realtime Database first, then re-copy the config (it must include databaseURL).';
+      return;
+    }
+    FB = cfg;
+    persistFb(cfg);
+    // Show a setup link the user can bookmark so they never have to paste again.
+    var setupLink = location.origin + location.pathname + '#fb=' + encodeURIComponent(b64enc(JSON.stringify(cfg)));
+    MODE = 'home';
+    app.innerHTML =
+      '<div class="spread" style="margin-bottom:10px"><div class="eyebrow">Setup complete</div>' +
+      '<button class="btn btn-ghost btn-sm" data-act="home">Home</button></div>' +
+      '<div class="card-panel" style="max-width:520px;margin:0 auto">' +
+        '<h2>Firebase config saved</h2>' +
+        '<p class="muted" style="margin:8px 0">Bookmark or save this link. Next time you open it, you\'ll be instantly ready to host without pasting the config again:</p>' +
+        '<div style="background:#11150f;border:1px solid var(--line);border-radius:4px;padding:10px;margin:10px 0;word-break:break-all;font-size:12px;color:var(--bone);font-family:monospace">' +
+          '<a href="' + setupLink + '" style="color:var(--brass);text-decoration:none">' + esc(setupLink) + '</a>' +
+        '</div>' +
+        '<div class="row" style="gap:8px">' +
+          '<button class="btn" style="flex:1" data-act="copy-setup-link">Copy link</button>' +
+          (navigator.share ? '<button class="btn-accent" style="flex:1" data-act="share-setup-link">Share link</button>' : '') +
+        '</div>' +
+        '<hr class="divider">' +
+        '<button class="btn-accent btn" style="width:100%;margin-top:8px" data-act="continue-hosting">Continue to hosting</button>' +
+      '</div>';
+  }
+  function copySetupLink() {
+    var setupLink = location.origin + location.pathname + '#fb=' + encodeURIComponent(b64enc(JSON.stringify(FB)));
+    if (navigator.clipboard) navigator.clipboard.writeText(setupLink).catch(function () {});
+    var b = document.querySelector('[data-act="copy-setup-link"]');
+    if (b) { var t = b.textContent; b.textContent = 'Copied'; setTimeout(function () { b.textContent = t; }, 1200); }
+  }
+  function shareSetupLink() {
+    var setupLink = location.origin + location.pathname + '#fb=' + encodeURIComponent(b64enc(JSON.stringify(FB)));
+    if (!navigator.share) return copySetupLink();
+    navigator.share({
+      title: 'Back Alley Bridge Setup Link',
+      text: 'Use this link to host Back Alley Bridge. Your Firebase config is embedded so you never need to paste it again.',
+      url: setupLink
+    }).catch(function () {});
+  }
+  function continueHosting() {
+    goOnline();
+  }
+  function readName2() { var v = val('nameInput2'); if (v) myName = v; }
+  function showOnlineErr(msg) { var e = $('onlineErr'); if (e) e.textContent = msg; }
+
+  function roomPhase() {
+    if (!STATE) return 'lobby';
+    return STATE.phase === 'finished' ? 'finished' : (STATE.phase === 'lobby' ? 'lobby' : 'playing');
+  }
+  function seatsToArray() {
+    var seats = (STATE && MODE === 'onlineGame') ? STATE.seats : arrayToSeats(room ? room.seats : []);
+    var a = []; for (var i = 0; i < 4; i++) a.push((seats && seats[i]) || null);
+    return a;
+  }
+  function arrayToSeats(arr) {
+    var o = {}; for (var i = 0; i < 4; i++) if (arr && arr[i]) o[i] = arr[i]; return o;
+  }
+
+  // Host writes the whole authoritative room doc as one JSON string; every guest
+  // is subscribed to it and re-renders the instant it changes.
+  function writeRoom() {
+    if (!roomCode || !db) return;
+    room = room || {};
+    room.host = { id: myId, beat: Date.now() };
+    room.phase = roomPhase();
+    room.seats = seatsToArray();
+    room.gameJSON = (STATE && MODE === 'onlineGame') ? JSON.stringify(STATE) : null;
+    room.ver = (room.ver || 0) + 1;
+    lastVer = room.ver;
+    return docRef().set(JSON.stringify(room));
+  }
+
+  function createRoom() {
+    readName2();
+    ensureFirebase().then(function (ok) {
+      if (!ok) { showOnlineErr('Online is not configured yet. Add your Firebase databaseURL near the top of this file.'); return; }
+      roomCode = genCode();
+      isHost = true; mySeat = 0; roomLive = false; STATE = null;
+      room = {
+        host: { id: myId, beat: Date.now() }, phase: 'lobby',
+        seats: [{ name: myName || 'Host', isBot: false, playerId: myId }, null, null, null],
+        gameJSON: null, ver: 0
+      };
+      rememberRoom(roomCode);
+      db.ref(roomPath()).remove().catch(function () {});
+      addPresence();
+      writeRoom();
+      startHostDuties();
+      MODE = 'onlineLobby'; roomLive = true;
+      render();
+    });
+  }
+
+  function joinRoom() {
+    readName2();
+    var code = (val('codeInput') || '').toUpperCase().replace(/[^A-Z]/g, '');
+    if (code.length !== 4) { showOnlineErr('Enter the four-letter room code.'); return; }
+    showOnlineErr('Connecting to room ' + code + '...');
+    ensureFirebase().then(function (ok) {
+      if (!ok) { showOnlineErr('Online is not configured yet. Add your Firebase databaseURL near the top of this file.'); return; }
+      roomCode = code;
+      docRef().once('value').then(function (snap) {
+        var raw = snap.val();
+        if (!raw) { showOnlineErr('No open room with code ' + code + '. Check the code, or ask the host to create the room first.'); roomCode = null; return; }
+        var r = safeParse(raw);
+        if (!r) { showOnlineErr('That room looks corrupted. Ask the host to make a new one.'); roomCode = null; return; }
+        if (r.phase && r.phase !== 'lobby') {
+          var g = r.gameJSON ? safeParse(r.gameJSON) : null;
+          var held = -1;
+          if (g && g.seats) for (var i = 0; i < 4; i++) if (g.seats[i] && g.seats[i].playerId === myId) held = i;
+          if (held < 0) { showOnlineErr('That game is already in progress.'); roomCode = null; return; }
+        }
+        isHost = false; room = r; lastVer = -1;
+        rememberRoom(code);
+        addPresence();
+        attachRoomListener();
+        MODE = 'onlineLobby';
+        mySeat = computeMySeat(); if (mySeat < 0) mySeat = 0;
+        render();
+      }).catch(function () {
+        showOnlineErr('Could not reach the game database. Check the Firebase setup and your connection.');
+        roomCode = null;
+      });
+    });
+  }
+
+  // ---- host duties: assign seats from presence, apply incoming moves, heartbeat ----
+  function startHostDuties() {
+    if (hostBeatTimer) clearInterval(hostBeatTimer);
+    var pRef = db.ref(roomPath() + '/players');
+    var onPlayers = pRef.on('value', function (snap) {
+      if (!isHost || roomPhase() !== 'lobby') return;
+      var players = [];
+      snap.forEach(function (c) { var p = c.val(); if (p) players.push(p); });
+      players.sort(function (a, b) { return a.ts - b.ts; });
+      var arr = [{ name: myName || 'Host', isBot: false, playerId: myId }, null, null, null];
+      var others = players.filter(function (p) { return p.id !== myId; });
+      var slot = 1;
+      for (var i = 0; i < others.length && slot < 4; i++) {
+        arr[slot++] = { name: others[i].name || 'Player', isBot: false, playerId: others[i].id };
+      }
+      if (JSON.stringify(arr) !== JSON.stringify((room && room.seats) || [])) {
+        room = room || {}; room.seats = arr; writeRoom();
+        if (MODE === 'onlineLobby') render();
+      }
+    });
+    listeners.push({ ref: pRef, ev: 'value', cb: onPlayers });
+
+    var mRef = db.ref(roomPath() + '/moves');
+    var onMove = function (snap) {
+      if (!isHost || !STATE) return;
+      var seat = parseInt(snap.key, 10);
+      var mv = snap.val();
+      db.ref(roomPath() + '/moves/' + snap.key).remove();
+      if (mv && mv.action && mv.action.seat === seat && STATE.turnSeat === seat) applyHost(mv.action);
+    };
+    var a1 = mRef.on('child_added', onMove);
+    var a2 = mRef.on('child_changed', onMove);
+    listeners.push({ ref: mRef, ev: 'child_added', cb: a1 });
+    listeners.push({ ref: mRef, ev: 'child_changed', cb: a2 });
+
+    hostBeatTimer = setInterval(function () {
+      if (isHost && db) db.ref(roomPath() + '/host').set({ id: myId, beat: Date.now() });
+    }, BEAT_EVERY);
+  }
+
+  function applyHost(action) {
+    STATE = E.reduce(STATE, action);
+    writeRoom();
+    scheduleHostFollowup();
+    render();
+  }
+  function scheduleHostFollowup() {
+    if (hostTimer) { clearTimeout(hostTimer); hostTimer = null; }
+    if (!isHost || !STATE) return;
+    if (STATE.phase === 'playing' && STATE.awaitingTrickClear) {
+      hostTimer = setTimeout(function () { if (isHost) applyHost({ type: 'clearTrick' }); }, TRICK_HOLD);
+    } else if ((STATE.phase === 'bidding' || STATE.phase === 'playing') && isBotSeat(STATE.turnSeat)) {
+      var d = STATE.phase === 'bidding' ? BID_DELAY : PLAY_DELAY;
+      hostTimer = setTimeout(function () { if (!isHost) return; var a = E.botAction(STATE, botDifficulty); if (a) applyHost(a); }, d);
+    } else if (STATE.phase === 'handScored') {
+      hostTimer = setTimeout(function () { if (isHost) applyHost({ type: 'nextHand' }); }, NEXT_DELAY);
+    }
+  }
+
+  function startGameOnline() {
+    if (!isHost) return;
+    var seatsObj = arrayToSeats(room.seats);
+    STATE = E.newLobbyState(seatsObj);
+    STATE = E.reduce(STATE, { type: 'startGame' });
+    // Guarantee every seat carries a display name (bots included).
+    for (var s = 0; s < 4; s++) {
+      if (!STATE.seats[s]) STATE.seats[s] = { name: E.BOT_NAMES[s], isBot: true, playerId: 'bot' + s };
+      else if (!STATE.seats[s].name) STATE.seats[s].name = STATE.seats[s].isBot ? E.BOT_NAMES[s] : ('Seat ' + s);
+    }
+    MODE = 'onlineGame';
+    mySeat = computeMySeat(); if (mySeat < 0) mySeat = 0;
+    writeRoom();
+    scheduleHostFollowup();
+    render();
+  }
+
+  // ---- guest: subscribe to the room doc; adopt host if the host drops ----
+  function attachRoomListener() {
+    detachListeners();
+    var rref = db.ref(roomPath());
+    var cb = rref.on('value', function (snap) {
+      var v = snap.val() || {};
+      if (isHost) return; // host is authoritative; ignore echoes of its own writes
+      var hostNode = v.host || {};
+      var r = v.doc ? safeParse(v.doc) : null;
+      if (r) {
+        room = r;
+        if (r.ver !== lastVer) {
+          lastVer = r.ver; awaiting = false;
+          if (r.phase === 'lobby') { MODE = 'onlineLobby'; STATE = null; }
+          else if (r.gameJSON) { STATE = safeParse(r.gameJSON); MODE = 'onlineGame'; }
+          mySeat = computeMySeat(); if (mySeat < 0) mySeat = 0;
+          render();
+        }
+      }
+      var beat = hostNode.beat || (r && r.host && r.host.beat) || 0;
+      var hostId = hostNode.id || (r && r.host && r.host.id);
+      if ((Date.now() - beat) > HOST_STALE && amLowestHuman(hostId)) becomeHost();
+    });
+    listeners.push({ ref: rref, ev: 'value', cb: cb });
+  }
+  function amLowestHuman(deadHostId) {
+    var arr = seatsToArray();
+    for (var i = 0; i < 4; i++) {
+      var s = arr[i];
+      if (s && !s.isBot && s.playerId && s.playerId !== deadHostId) return s.playerId === myId;
+    }
+    return false;
+  }
+  function becomeHost() {
+    if (isHost) return;
+    isHost = true;
+    detachListeners();
+    if (room && room.gameJSON && !STATE) STATE = safeParse(room.gameJSON);
+    mySeat = computeMySeat(); if (mySeat < 0) mySeat = 0;
+    db.ref(roomPath() + '/host').set({ id: myId, beat: Date.now() });
+    writeRoom();
+    startHostDuties();
+    scheduleHostFollowup();
+    render();
+  }
+
+  function submitOnline(action) {
+    if (isHost) { applyHost(action); return; }
+    if (!db) return;
+    awaiting = true;
+    db.ref(roomPath() + '/moves/' + mySeat).set({ action: action, ts: Date.now() });
+    render();
+  }
+
+  // ----------------------------------------------------------- teardown
+  function leaveToHome() {
+    if (localTimer) { clearTimeout(localTimer); localTimer = null; }
+    if (hostTimer) { clearTimeout(hostTimer); hostTimer = null; }
+    if (hostBeatTimer) { clearInterval(hostBeatTimer); hostBeatTimer = null; }
+    detachListeners();
+    if (roomCode && db && myId) db.ref(roomPath() + '/players/' + myId).remove().catch(function () {});
+    roomCode = null; isHost = false; room = null; roomLive = false; lastVer = -1; awaiting = false;
+    STATE = null; MODE = 'home'; mySeat = 0;
+    render();
+  }
+
+  // ----------------------------------------------------------- share helpers
+  function copyCode() {
+    if (!roomCode) return;
+    if (navigator.clipboard) navigator.clipboard.writeText(roomCode).catch(function () {});
+    var b = document.querySelector('[data-act="copy-code"]');
+    if (b) { var t = b.textContent; b.textContent = 'Copied'; setTimeout(function () { b.textContent = t; }, 1200); }
+  }
+  // The invite link carries the Firebase config and the room code in the hash,
+  // so a family member who taps it lands fully configured with the code prefilled.
+  function inviteURL() {
+    var base = location.origin + location.pathname;
+    var fb = b64enc(JSON.stringify(FB));
+    return base + '#fb=' + encodeURIComponent(fb) + (roomCode ? '&room=' + roomCode : '');
+  }
+  function copyInvite() {
+    if (navigator.clipboard) navigator.clipboard.writeText(inviteURL()).catch(function () {});
+    var b = document.querySelector('[data-act="copy-invite"]');
+    if (b) { var t = b.textContent; b.textContent = 'Copied'; setTimeout(function () { b.textContent = t; }, 1200); }
+  }
+  function shareRoom() {
+    if (!navigator.share) return copyInvite();
+    navigator.share({
+      title: 'Back Alley Bridge',
+      text: 'Join my Back Alley Bridge game. Tap the link, then Play online. Room code: ' + roomCode,
+      url: inviteURL()
+    }).catch(function () {});
+  }
+
+  // ----------------------------------------------------------- click routing
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]');
+    if (!el) return;
+    var act = el.getAttribute('data-act');
+    switch (act) {
+      case 'local-start': startLocal(); break;
+      case 'go-online': goOnline(); break;
+      case 'create-room': createRoom(); break;
+      case 'join-room': joinRoom(); break;
+      case 'start-game': startGameOnline(); break;
+      case 'copy-code': copyCode(); break;
+      case 'copy-invite': copyInvite(); break;
+      case 'save-fb': saveFbConfig(); break;
+      case 'copy-setup-link': copySetupLink(); break;
+      case 'share-setup-link': shareSetupLink(); break;
+      case 'continue-hosting': continueHosting(); break;
+      case 'share-room': shareRoom(); break;
+      case 'home': leaveToHome(); break;
+      case 'play-again': playAgainLocal(); break;
+      case 'next-hand':
+        if (MODE === 'localGame') dispatchLocal({ type: 'nextHand' });
+        else submitOnline({ type: 'nextHand' });
+        break;
+      case 'play-card': {
+        var cid = el.getAttribute('data-card');
+        var a1 = { type: 'play', seat: mySeat, cardId: cid };
+        if (MODE === 'localGame') dispatchLocal(a1); else submitOnline(a1);
+        break;
+      }
+      case 'bid': {
+        var bt = el.getAttribute('data-bidtype');
+        var bid = { type: bt };
+        if (bt === 'num') bid.value = parseInt(el.getAttribute('data-bidval'), 10);
+        var a2 = { type: 'bid', seat: mySeat, bid: bid };
+        if (MODE === 'localGame') dispatchLocal(a2); else submitOnline(a2);
+        break;
+      }
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    if (e.target && (e.target.id === 'nameInput' || e.target.id === 'nameInput2')) {
+      var v = e.target.value.trim(); if (v) myName = v;
+    }
+  });
+
+  var savedIdentity = loadIdentity();
+  initFromHashAndSaved(savedIdentity);
+  render();
+})();
+
+  </script>
+</body>
+</html>
